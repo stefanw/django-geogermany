@@ -22,7 +22,7 @@ class GermanGeoArea(models.Model):
     rs = models.CharField(_('Regional Key'), max_length=255, blank=True)
     ags = models.CharField(_('Official Municipality Key'), max_length=255, blank=True)
     nuts = models.CharField(_('NUTS key'), max_length=255, blank=True)
-    population = models.IntegerField(null=True)
+    population = models.IntegerField(null=True, blank=True)
 
     # in Sqm
     area = models.FloatField(_('Area'), default=0.0)
