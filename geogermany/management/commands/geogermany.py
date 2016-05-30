@@ -7,7 +7,8 @@ from django.contrib.gis.geos.error import GEOSException
 
 from slugify import slugify
 
-from ...models import GermanGeoArea, State, District, Municipality, ZipCode
+from ...models import (GermanGeoArea, State, District, Municipality,
+                       ZipCode, Borough)
 
 
 class Command(BaseCommand):
@@ -30,6 +31,9 @@ class Command(BaseCommand):
         self.load_by_path(Municipality, base_path, 'gemeinden.shp')
         self.stdout.write("\nZipCode\n")
         self.load_zip(ZipCode, base_path, 'plz.geojson')
+
+    def borough(self, *args, **options):
+        self.load_boroughs(Borough, options['base_path'])
 
     def load_by_path(self, klass, base_path, filename):
         path = os.path.abspath(os.path.join(base_path, filename))
@@ -69,6 +73,21 @@ class Command(BaseCommand):
                 'valid_on': validity
             })
 
+    def load_boroughs(self, klass, path):
+        ds = DataSource(path)
+        mapping = LayerMapping(klass, ds, {'geom': 'POLYGON'})
+        layer = ds[0]
+        for feature in layer:
+            name = feature['Bezirk_Nam'].as_string()
+            slug = slugify(name)
+            geom = mapping.feature_kwargs(feature)['geom']
+            klass.objects.get_or_create(slug=slug, defaults={
+                'name': name,
+                'geom': geom,
+                'area': feature.geom.area,
+                'kind': 'borough'
+            })
+
     def load_zip(self, klass, base_path, filename):
         path = os.path.abspath(os.path.join(base_path, filename))
         ds = DataSource(path)
@@ -89,7 +108,8 @@ class Command(BaseCommand):
         matches = [
             ('district', 'state'),
             ('municipality', 'district'),
-            ('zipcode', 'state')
+            ('zipcode', 'state'),
+            ('borough', 'municipality')
         ]
         for small, big in matches:
             for small_obj in GermanGeoArea.objects.filter(kind=small,

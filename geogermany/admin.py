@@ -1,7 +1,8 @@
 from django.contrib import admin
 from leaflet.admin import LeafletGeoAdmin
 
-from .models import GermanGeoArea, State, District, Municipality, ZipCode
+from .models import (GermanGeoArea, State, District, Municipality, Borough,
+                    ZipCode)
 
 
 class GeoAreaAdmin(LeafletGeoAdmin):
@@ -23,6 +24,10 @@ class MunicipalityAdmin(GeoAreaAdmin):
     pass
 
 
+class BoroughAdmin(GeoAreaAdmin):
+    pass
+
+
 class ZipCodeAdmin(admin.ModelAdmin):
     pass
 
@@ -30,5 +35,6 @@ class ZipCodeAdmin(admin.ModelAdmin):
 admin.site.register(State, StateAdmin)
 admin.site.register(District, DistrictAdmin)
 admin.site.register(Municipality, MunicipalityAdmin)
+admin.site.register(Borough, BoroughAdmin)
 admin.site.register(ZipCode, ZipCodeAdmin)
 admin.site.register(GermanGeoArea, GeoAreaAdmin)

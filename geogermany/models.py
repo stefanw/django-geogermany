@@ -13,6 +13,7 @@ class GermanGeoArea(models.Model):
             ('state', _('state')),
             ('district', _('district')),
             ('municipality', _('municipality')),
+            ('borough', _('borough')),
             ('zipcode', _('zipcode')),
         )
     )
@@ -81,6 +82,15 @@ class Municipality(GermanGeoArea):
         proxy = True
         verbose_name = _('municipality')
         verbose_name_plural = _('municipalities')
+
+
+class Borough(GermanGeoArea):
+    objects = get_manager('borough')
+
+    class Meta:
+        proxy = True
+        verbose_name = _('borough')
+        verbose_name_plural = _('boroughs')
 
 
 class ZipCode(GermanGeoArea):
